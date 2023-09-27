@@ -4,6 +4,7 @@ import { ListagemFilme } from "../models/listagem-filme";
 import { Observable, map } from "rxjs";
 import { HttpClient } from '@angular/common/http'
 import { environment } from "../environments/environment";
+import { ResultadoBusca } from "../models/resultadoBusca";
 
 @Injectable({providedIn: 'root'})
 export class FilmeService {
@@ -91,6 +92,68 @@ mapearTrailer(obj: any[]): string {
     );
   }
 
+  public pegarResultadosDeBuscaPoupular(): Observable<ResultadoBusca> {
+    const url = `https://api.themoviedb.org/3/movie/popular`;
+  
+    return this.http.get<ResultadoBusca>(url, this.obterHeaders())
+      .pipe(
+        map((dados: any) => this.mapearResultadosBusca(dados))
+      );
+  }
+
+  public pegarResultadosDeBuscaEmBreve(): Observable<ResultadoBusca> {
+    const url = `https://api.themoviedb.org/3/movie/upcoming`;
+  
+    return this.http.get<ResultadoBusca>(url, this.obterHeaders())
+      .pipe(
+        map((dados: any) => this.mapearResultadosBusca(dados))
+      );
+  }
+
+  public buscarFilmesPorPaginaEmBreve( pagina: string): Observable<ListagemFilme[]>{
+    return this.http
+      .get<any>(`${'https://api.themoviedb.org/3/movie/'}upcoming?language=pt-BR&&page=${pagina}`, this.obterHeaders())
+      .pipe(
+        map((dadosI: any): any[] => dadosI.results),
+        map((dadosII: any[]): ListagemFilme[] => this.MapearFilmes(dadosII))
+      );
+  }
+
+  public buscarFilmesPorPaginaPopular( pagina: string): Observable<ListagemFilme[]>{
+    return this.http
+      .get<any>(`${'https://api.themoviedb.org/3/movie/'}popular?language=pt-BR&&page=${pagina}`, this.obterHeaders())
+      .pipe(
+        map((dadosI: any): any[] => dadosI.results),
+        map((dadosII: any[]): ListagemFilme[] => this.MapearFilmes(dadosII))
+      );
+  }
+
+  public buscarFilmesPorPaginaLancamento( pagina: string): Observable<ListagemFilme[]>{
+    return this.http
+      .get<any>(`${'https://api.themoviedb.org/3/movie/'}now_playing?language=pt-BR&&page=${pagina}`, this.obterHeaders())
+      .pipe(
+        map((dadosI: any): any[] => dadosI.results),
+        map((dadosII: any[]): ListagemFilme[] => this.MapearFilmes(dadosII))
+      );
+  }
+
+  public pegarResultadosDeBuscaLancamentos(): Observable<ResultadoBusca> {
+    const url = `https://api.themoviedb.org/3/movie/now_playing`;
+  
+    return this.http.get<ResultadoBusca>(url, this.obterHeaders())
+      .pipe(
+        map((dados: any) => this.mapearResultadosBusca(dados))
+      );
+  }
+
+  private mapearResultadosBusca(obj: any): ResultadoBusca{
+    return{
+      registros: this.MapearFilmes(obj.results),
+      quantidadePaginas: obj.total_pages,
+      quantidadeResultados: obj.total_results,
+    };
+  }
+
   private MapearFilmes(objetos: any): ListagemFilme[] {
     return objetos.map((obj: any) => {
       return new ListagemFilme(
@@ -98,18 +161,10 @@ mapearTrailer(obj: any[]): string {
         obj.title,
         obj.overview,
         obj.poster_path,
-        obj.backdrop_path
+        obj.backdrop_path,
+        obj.total_pages
       );
     });
-  }
-
-  public buscarFilmesPorPagina(tipo: string, pagina: string): Observable<ListagemFilme[]>{
-    return this.http
-      .get<any>(`$'https://api.themoviedb.org/3/movie/'}${tipo}?language=pt-BR&&page=${pagina}`, this.obterHeaders())
-      .pipe(
-        map((dadosI: any): any[] => dadosI.results),
-        map((dadosII: any[]): ListagemFilme[] => this.MapearFilmes(dadosII))
-      );
   }
 
   PegarDetalhesDoFilme(id: any): Observable<any> {

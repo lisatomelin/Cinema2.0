@@ -51,7 +51,8 @@ export class FavoritosService{
       objeto.title,
       objeto.overview,
       objeto.poster_path,
-      objeto.backdrop_path
+      objeto.backdrop_path,
+      objeto.total_pages
     );
   }
   
