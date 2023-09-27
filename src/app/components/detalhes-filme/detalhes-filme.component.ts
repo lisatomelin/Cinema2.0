@@ -38,15 +38,11 @@ export class DetalhesFilmeComponent implements OnInit {
 
     this.filmeService.PegarDetalhesDoFilme(id).subscribe((obj) => {
       this.elenco = obj.elenco;
+      this.diretor = obj.diretor;
    })
-
-   this.filmeService.PegarDetalhesDoFilme(id).subscribe((obj) => {
-    this.diretor = obj.diretor;
-  })
   }
 
   adicionarFavoritos(){
-    
     const id = this.route.snapshot.paramMap.get('id')!;
 
     this.favoritoService.favoritar(id);

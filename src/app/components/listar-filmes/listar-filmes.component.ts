@@ -12,6 +12,7 @@ export class ListarFilmesComponent implements OnInit {
   filmesPorPopularidade: ListagemFilme[] = [];
   filmesLancamentos: ListagemFilme[] = [];
   filmesEmBreve: ListagemFilme[] = [];
+  filmesFavoritos: ListagemFilme[] = [];
 
   constructor(private filmeService: FilmeService, private favoritoService: FavoritosService){
 
@@ -28,6 +29,16 @@ export class ListarFilmesComponent implements OnInit {
     this.filmeService.selecionarFilmeEmBreve().subscribe((filmes: ListagemFilme[]) => {
       this.filmesEmBreve = filmes;
     })
+
+    const filmes = this.favoritoService.obterListaFav();
+    let contador: number = 0;
+
+    for(let filme of filmes){
+      this.favoritoService.selecionarFilmePorId(filme.id).subscribe((filme) => {
+        this.filmesFavoritos[contador] = filme;
+        contador++;
+      })
+    }
   }
 
 }

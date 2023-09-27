@@ -1,7 +1,13 @@
 import { Injectable } from "@angular/core";
+import { ListagemFilme } from "../models/listagem-filme";
+import { Observable, map } from "rxjs";
+import { environment } from "../environments/environment";
+import { HttpClient } from "@angular/common/http";
 
 @Injectable({providedIn: 'root'})
 export class FavoritosService{
+  constructor(private http: HttpClient){}
+
   private obterDados(){
     const dados = localStorage.getItem('api-filmes-favoritos');
 
@@ -28,6 +34,37 @@ export class FavoritosService{
 
       localStorage.setItem('api-filmes-favoritos', JSON.stringify(dados));
     }
+  }
+
+  public selecionarFilmePorId(id: number): Observable<ListagemFilme> {
+    const url = `https://api.themoviedb.org/3/movie/${id}?language=pt-BR`;
+  
+    return this.http.get<ListagemFilme[]>(url, this.obterHeaders())
+      .pipe(
+        map((dados: any) => this.MapearFilmes(dados))
+      );
+  }
+
+  private MapearFilmes(objeto: any): ListagemFilme {
+    return new ListagemFilme(
+      objeto.id,
+      objeto.title,
+      objeto.overview,
+      objeto.poster_path,
+      objeto.backdrop_path
+    );
+  }
+  
+
+  private obterHeaders() {
+    return {
+      method: "GET",
+      headers: {
+        accept: "application/json",
+        Authorization:
+          environment.API_URL
+      },
+    };
   }
 
   public obterListaFav(): any[]{

@@ -1,4 +1,16 @@
 <div class="container mt-5">
+  <h2 class="fs-1 text-info">Meus Favoritos</h2>
+  <div class="row g-3">
+    <div class="col-6 col-md-4 col-lg-2 text-center" *ngFor="let filme of filmesFavoritos">
+      <div class="d-grid gap-2">
+        <img src="{{ filme.urlPoster }}" alt="{{ filme.titulo }}" class="img-fluid rounded-3">
+        <a routerLink="/detalhes-filmes/{{ filme.id }}" class="fs-5 link-info text-decoration-none">{{ filme.titulo }}</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container mt-5">
   <h2 class="fs-1 text-info">Filmes Em Alta</h2>
   <div class="row g-3">
     <div class="col-6 col-md-4 col-lg-2 text-center" *ngFor="let filme of filmesPorPopularidade">

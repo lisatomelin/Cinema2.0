@@ -103,6 +103,15 @@ mapearTrailer(obj: any[]): string {
     });
   }
 
+  public buscarFilmesPorPagina(tipo: string, pagina: string): Observable<ListagemFilme[]>{
+    return this.http
+      .get<any>(`$'https://api.themoviedb.org/3/movie/'}${tipo}?language=pt-BR&&page=${pagina}`, this.obterHeaders())
+      .pipe(
+        map((dadosI: any): any[] => dadosI.results),
+        map((dadosII: any[]): ListagemFilme[] => this.MapearFilmes(dadosII))
+      );
+  }
+
   PegarDetalhesDoFilme(id: any): Observable<any> {
     const url = `https://api.themoviedb.org/3/movie/${id}?language=en-US&append_to_response=credits`;
   
